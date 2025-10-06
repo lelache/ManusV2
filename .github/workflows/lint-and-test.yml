@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: frontend  # <- toutes les commandes se font dans frontend/
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,6 +28,7 @@ jobs:
         with:
           node-version: 20
           cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install
@@ -32,4 +37,6 @@ jobs:
         run: pnpm lint || echo "Lint skipped (no config yet)"
 
       - name: Build
-        run: cd frontend && pnpm build
+        env:
+          NODE_ENV: production
+        run: pnpm build
