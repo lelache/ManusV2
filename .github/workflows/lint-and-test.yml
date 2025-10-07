@@ -31,28 +31,28 @@ jobs:
         with:
           node-version: 20
 
-      # IMPORTANT: s'assurer qu'il n'y a PAS de workspace à la racine
-      - name: Ensure no pnpm workspace at repo root
-        run: rm -f pnpm-workspace.yaml
+      # Supprimer tout pnpm-workspace.yaml résiduel
+      - name: Clean rogue pnpm workspace file
+        run: |
+          echo "Removing pnpm-workspace.yaml if exists"
+          rm -f pnpm-workspace.yaml
 
-      # On bascule ensuite dans frontend pour tout le reste
-      - name: Show workspace
+      # Ensurer qu'on est dans frontend pour les étapes suivantes
+      - name: Show workspace contents
         working-directory: frontend
         run: |
           pwd
           ls -la
           test -f pnpm-lock.yaml && echo "pnpm-lock.yaml OK" || (echo "pnpm-lock.yaml MISSING" && exit 1)
 
-      - name: Install dependencies
+      - name: Install dependencies in frontend
         working-directory: frontend
         run: pnpm install
 
       - name: Lint
         working-directory: frontend
-        run: pnpm lint || echo "Lint skipped (no config yet)"
+        run: pnpm lint || echo "Lint skipped"
 
       - name: Build
         working-directory: frontend
-        env:
-          NODE_ENV: production
         run: pnpm build
